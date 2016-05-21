@@ -2,33 +2,12 @@ require 'forwardable'
 require 'set'
 module Related
   class Tuple
-    extend Forwardable
-    def_delegators :@hash, :keys, :[]
-    def initialize tuple_hash
-      @hash = tuple_hash
+    def initialize schema, ary
+      @schema, @attributes = schema, ary
     end
 
-    # Used in natural join to determine whether to join with another tuple
-    def & other
-      matches = self.schema & other.schema
-      return nil if matches.empty? || matches.any? {|k| self[k] != other[k] }
-      Tuple.new( self.merge other )
-    end
-
-    def schema
-      Set[*keys]
-    end
-
-    def merge other
-      @hash.merge other.to_hash
-    end
-
-    def to_hash
-      @hash
-    end
-
-    def == other_tuple
-      other_tuple == @hash
+    def [] key
+      @attributes[ @schema[key].index ]
     end
   end
 end

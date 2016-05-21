@@ -1,3 +1,7 @@
+# The Schema class allows for quick lookup of Attribute types, indexes, and names.
+# Two hashes and an array are used to allow for any of these items to be retrieved at order 1 speed.
+# During a Rename operation, each of these three structures must be updated,
+# however, this is still significantly faster than updating every tuple in a relation.
 module Related
   Attribute = Struct.new(:name, :type, :index)
   class Schema

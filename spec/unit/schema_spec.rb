@@ -13,14 +13,14 @@ describe Schema do
   end
 
   context "#[]" do
-    it "returns Attribute Header containing name, type, and index when given name" do
+    it "when given name returns Attribute Header containing name, type, and index" do
       attribute = schema[:name]
       expect(attribute[:name]).to eq(:name)
       expect(attribute[:type]).to eq(String)
       expect(attribute[:index]).to be_a(Integer)
     end
 
-    it "returns Attribute Header containing name, type, and index when given index" do
+    it "when given index returns Attribute Header containing name, type, and index" do
       index = schema[:name].index
       attribute = schema[index]
       expect(attribute[:name]).to eq(:name)

@@ -31,7 +31,8 @@ describe Relation do
   %w[𝜎].each do |method|
     context "##{method}" do
       it "performs select operation with given block as condition" do
-        result = Relation.new(name: String, pizza: String) do |r|
+        schema = Schema.new(name: String, pizza: String)
+        result = Relation.new(schema) do |r|
           r.add_tuple ["Amy", "mushroom"]
           r.add_tuple ["Gus", "mushroom"]
         end
@@ -40,15 +41,21 @@ describe Relation do
     end
   end
   
-  let(:menu) { Relation.new pizza: String, price: Numeric }
+  let(:menu) do 
+    Relation.new do |r|
+      r.schema = Schema.new(pizza: String, price: Numeric)
+    end 
+  end
   let(:people) do 
-    Relation.new(name: String, age: Numeric, gender: String) do |r|
+    Relation.new do |r|
+      r.schema = Schema.new(name: String, age: Numeric, gender: String)
       r.add_tuple ["Amy", 16, "female"]
       r.add_tuple ["Ben", 21, "male"]
     end
   end
   let(:favorites) do 
-    Relation.new(name: String, pizza: String) do |r|
+    Relation.new do |r|
+      r.schema = Schema.new(name: String, pizza: String)
       r.add_tuple ["Amy", "mushroom"]
       r.add_tuple ["Amy", "pepperoni"]
       r.add_tuple ["Ben", "cheese"]

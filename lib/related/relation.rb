@@ -7,9 +7,10 @@ module Related
     attr_accessor :tuples, :schema
     def_delegators :@tuples, :each
 
-    def initialize schema_hash
-      @schema = Schema.new schema_hash
-      yield self, @schema if block_given?
+    def initialize schema = nil
+      @schema = schema
+      yield self if block_given?
+      raise ArgumentError unless @schema
     end
 
     def add_tuple ary

@@ -5,7 +5,7 @@ describe Relation do
     
     it "adds a tuple to the relation" do
       menu.add_tuple ["supreme", 10]
-      expect( menu.tuples ).to eq(Set[["supreme", 10]])
+      expect( menu ).to include(["supreme", 10])
     end
     it "throws an error if tuple is illegal for schema" do
       expect { menu.add_tuple ["supreme", "10"] }.to raise_error TypeError
@@ -28,15 +28,32 @@ describe Relation do
     end
   end
 
-  %w[𝜎].each do |method|
+  %w[𝜎 selection].each do |method|
     context "##{method}" do
       it "performs select operation with given block as condition" do
-        schema = Schema.new(name: String, pizza: String)
-        result = Relation.new(schema) do |r|
+        result = Relation.new do |r|
+          r.schema = Schema.new(name: String, pizza: String)
           r.add_tuple ["Amy", "mushroom"]
           r.add_tuple ["Gus", "mushroom"]
         end
         expect( favorites.send(method) {|t| t[:pizza] == "mushroom" }).to eq(result)
+      end
+    end
+  end
+
+  %w[∩ intersection].each do |method|
+    context "##{method}" do
+      it "performs intersection" do
+        people2 = Relation.new do |r|
+          r.schema = Schema.new(name: String, age: Numeric, gender: String)
+          r.add_tuple ["Ben", 21, "male"]
+          r.add_tuple ["Gus", 45, "male"]
+        end
+        result = Relation.new do |r|
+          r.schema = Schema.new(name: String, age: Numeric, gender: String)
+          r.add_tuple ["Ben", 21, "male"]
+        end
+        expect( people2.send(method, people) ).to eq(result)
       end
     end
   end

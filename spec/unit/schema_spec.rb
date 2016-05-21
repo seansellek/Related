@@ -28,4 +28,10 @@ describe Schema do
       expect(attribute[:index]).to be_a(Integer)
     end
   end
+
+  context "#names" do
+    it "returns array of attribute names" do
+      expect(schema.names).to eq([:name, :age, :gender])
+    end
+  end
 end

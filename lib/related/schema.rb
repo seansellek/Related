@@ -5,6 +5,7 @@
 module Related
   Attribute = Struct.new(:name, :type, :index)
   class Schema
+    attr_accessor :tuple_heading
     def initialize schema_hash
         @type_hash, @index_hash = schema_hash, {}
         @tuple_heading = @type_hash.to_a
@@ -35,5 +36,13 @@ module Related
 
   def match? ary
     ary.each.with_index.all? { |obj, i| obj.is_a? self[i][:type] }
+  end
+
+  def same_as? schema
+    @tuple_heading == schema.tuple_heading
+  end
+
+  def names 
+    @type_hash.keys
   end
 end

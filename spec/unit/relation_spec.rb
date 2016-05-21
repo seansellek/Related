@@ -57,6 +57,27 @@ describe Relation do
       end
     end
   end
+
+  %w[∪ union].each do |method|
+    context "##{method}" do
+      it "performs union" do
+        people2 = Relation.new do |r|
+          r.schema = Schema.new(name: String, age: Numeric, gender: String)
+          r.add_tuple ["Ben", 21, "male"]
+          r.add_tuple ["Gus", 45, "male"]
+        end
+        result = Relation.new do |r|
+          r.schema = Schema.new(name: String, age: Numeric, gender: String)
+          r.add_tuple ["Ben", 21, "male"]
+          r.add_tuple ["Amy", 16, "female"]
+          r.add_tuple ["Gus", 45, "male"]
+        end
+        expect( people2.send(method, people) ).to eq(result)
+      end
+    end
+  end
+
+
   
   let(:menu) do 
     Relation.new do |r|

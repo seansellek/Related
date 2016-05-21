@@ -5,7 +5,7 @@ module Related
   class Relation
     extend Forwardable
     attr_accessor :tuples, :schema
-    def_delegators :@tuples, :each, :empty?, :&
+    def_delegators :@tuples, :each, :empty?, :&, :|
 
     def initialize schema = nil, tuples = nil
       @schema = schema
@@ -37,6 +37,12 @@ module Related
       Relation.new(schema, other & tuples)
     end
     alias_method "∩", "intersection"
+
+    def union other
+      raise ArgumentError unless schema.same_as? other.schema
+      Relation.new(schema, other | tuples)
+    end
+    alias_method "∪", "union"
 
     def - other
       raise ArgumentError unless schema.same_as? other.schema

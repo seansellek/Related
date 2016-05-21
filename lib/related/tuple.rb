@@ -2,33 +2,35 @@
 # The Tuple class makes use of a schema to lookup values, allowing it to be unaffected by Rename operations.
 module Related
   class Tuple
-    extend Forwardable
     attr_accessor :values
 
-    def initialize schema, ary
-      @schema, @values = schema, ary
+    def initialize ary
+      @values = ary
     end
 
-    def [] key
-      @values[ @schema[key].index ]
+     def [] key, schema = nil
+      key = schema ? schema[key].index : key
+      @values[key]
     end
 
-    def attributes
-      @schema.names.each_with_object({}) do |name, attrs|
-        attrs[name] = self[ name ]
-      end
+    def attributes schema
+      schema.tuple_heading.each_with_index.map do |pair, i|
+        attribute_name, _ = pair
+        [attribute_name, @values[i]]
+      end.to_h
     end
 
     def == other
-      if other.respond_to? :schema
-        return false unless @schema.same_as? other.schema
+      if other.respond_to? :values
+        values == other.values
+      else
+        values == other
       end
-      other == values
     end
     alias_method "eql?", "=="
 
     def hash
-      [@schema.tuple_heading, *values].hash
+      values.hash
     end
   end
 end

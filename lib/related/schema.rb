@@ -24,6 +24,10 @@ module Related
     end
   end
 
+  def similar
+    self.class.new(@type_hash)
+  end
+
   def attribute_for_index index
     name, type = @tuple_heading[index]
     Attribute.new name, type, index
@@ -32,6 +36,13 @@ module Related
   def attribute_for_name name
     type, index = @type_hash[name], @index_hash[name]
     Attribute.new name, type, index
+  end
+
+  def rename new_names
+    new_attribute_hash = new_names.each.with_index.map do |name, i|
+       [ name, @tuple_heading[i][1] ]
+     end.to_h
+    self.class.new(new_attribute_hash)
   end
 
   def match? ary

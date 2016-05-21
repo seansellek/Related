@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe Related::Tuple do
-  let(:tuple) { Tuple.new(Schema.new(name: String, age: Integer, gender: String), ["Amy", 16, "female"]) }
+  let(:tuple) { Tuple.new(["Amy", 16, "female"]) }
+  let(:schema) { Schema.new({name: String, age: 16, gender: "female"})}
   context "#[]" do
-    it "when given name returns triple" do
-      expect(tuple[:name]).to eq("Amy")
+    it "when given name and schema returns triple" do
+      expect(tuple[:name, schema]).to eq("Amy")
     end
     it "when given index returns value" do
       expect(tuple[0]).to eq("Amy")
@@ -19,7 +20,7 @@ describe Related::Tuple do
 
   context "#attributes" do
     it "returns a hash of attributes" do
-      expect(tuple.attributes).to eq(name: "Amy", age: 16, gender: "female")
+      expect(tuple.attributes(schema)).to eq(name: "Amy", age: 16, gender: "female")
     end
   end
 

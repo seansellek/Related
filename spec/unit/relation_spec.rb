@@ -41,6 +41,21 @@ describe Relation do
     end
   end
 
+  %w[ρ rename].each do |method|
+    context "##{method}" do
+      it "performs rename of attributes in relation" do
+        result = Relation.new do |r|
+          r.schema = Schema.new(person_name: String, pizza_name: String)
+          r.add_tuple ["Amy", "mushroom"]
+          r.add_tuple ["Amy", "pepperoni"]
+          r.add_tuple ["Ben", "cheese"]
+          r.add_tuple ["Gus", "mushroom"]
+        end
+        expect(favorites.send(method, [:person_name, :pizza_name])).to eq(result)
+      end
+    end
+  end
+
   %w[∩ intersection].each do |method|
     context "##{method}" do
       it "performs intersection" do

@@ -1,2 +1,2 @@
 require 'related'
-# require 'pry-byebug'
+require 'pry-byebug'

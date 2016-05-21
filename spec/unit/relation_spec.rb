@@ -28,7 +28,7 @@ describe Relation do
     end
   end
 
-  %w[𝜎 selection].each do |method|
+  %w[𝜎 select].each do |method|
     context "##{method}" do
       it "performs select operation with given block as condition" do
         result = Relation.new do |r|
@@ -37,6 +37,20 @@ describe Relation do
           r.add_tuple ["Gus", "mushroom"]
         end
         expect( favorites.send(method) {|t| t[:pizza] == "mushroom" }).to eq(result)
+      end
+    end
+  end
+
+  %w[π project].each do |method|
+    context "##{method}" do
+      it "performs projection with given attribute names" do
+        result = Relation.new do |r|
+          r.schema = Schema.new(name: String)
+          r.add_tuple ["Amy"]
+          r.add_tuple ["Gus"]
+          r.add_tuple ["Ben"]
+        end
+        expect( favorites.send(method, [:name])).to eq(result)
       end
     end
   end
@@ -91,6 +105,8 @@ describe Relation do
       end
     end
   end
+
+
 
 
   

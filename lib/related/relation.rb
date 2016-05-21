@@ -22,7 +22,7 @@ module Related
     alias_method "<<", "add_tuple"
 
     #Select operation; returns relation with tuples where block evaluates to true
-    def selection &block
+    def select &block
       Relation.new do |r|
         r.schema = schema.similar
         @tuples.each do |tuple|
@@ -30,8 +30,20 @@ module Related
         end
       end
     end
-    alias_method "𝜎", "selection"
+    alias_method "𝜎", "select"
 
+    def project attribute_names
+      attr_hash = attribute_names.each_with_object({}) do |name, hash|
+        hash[name] = schema[name][:type]
+      end
+      Relation.new do |r|
+        r.schema = Schema.new(attr_hash)
+        @tuples.each do |tuple|
+          r.add_tuple tuple.project(schema, attribute_names)
+        end
+      end
+    end
+    alias_method "π", "project"
 
     def natural_join other
     end

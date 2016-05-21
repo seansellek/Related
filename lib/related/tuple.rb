@@ -13,6 +13,10 @@ module Related
       @values[key]
     end
 
+    def project schema, attribute_names
+      attribute_names.map { |key| self[key, schema] } 
+    end
+
     def attributes schema
       schema.tuple_heading.each_with_index.map do |pair, i|
         attribute_name, _ = pair

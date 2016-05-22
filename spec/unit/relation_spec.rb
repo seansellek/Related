@@ -65,7 +65,7 @@ describe Relation do
 
   context "#π, #project" do
     it 'perform projection with given attribute names' do
-      projection = favorites.project([:name])
+      projection = favorites.project(:name)
       result = Relation.new do |r|
         r.schema = Schema.new(name: String)
         r.add_tuple ['Amy']

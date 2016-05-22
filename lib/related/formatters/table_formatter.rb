@@ -2,7 +2,7 @@ module Related
   module Formatters
     module TableFormatter
       def to_table
-        output = 'Relation\n|'
+        output = "Relation\n|"
         length = {}
         @schema.names.each {|n| length[n] = n.length }
         if @tuples
@@ -12,15 +12,15 @@ module Related
             end
           end
         end
-        output << @schema.names.map{ |n| n.to_s.capitalize.center(length[n] + 2)}.join('|') << '|\n'
-        output << '_' * output.lines.last.length << '\n'
+        output << @schema.names.map{ |n| n.to_s.capitalize.center(length[n] + 2)}.join("|") << "|\n"
+        output << "_" * output.lines.last.length << "\n"
         if @tuples
           @tuples.each do |tuple|
-            output << '|'
+            output << "|"
             tuple.attributes(schema).each do |name, value|
-              output << value.to_s.center( length[name] + 2 ) << '|'
+              output << value.to_s.center( length[name] + 2 ) << "|"
             end
-            output << '\n'
+            output << "\n"
           end
         end
         output

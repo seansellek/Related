@@ -34,7 +34,8 @@ module Related
     end
     alias 𝜎 select
 
-    def project(attribute_names)
+    def project(*args)
+      attribute_names = args.flatten
       Relation.new do |r|
         r.schema = schema.project attribute_names
         tuples.each do |tuple|
@@ -107,7 +108,7 @@ module Related
       tuples == other.tuples && schema == other.schema
     end
 
-    def inspect
+    def to_s
       to_table
     end
   end

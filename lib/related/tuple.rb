@@ -15,7 +15,7 @@ module Related
 
     def project(schema, attribute_names)
       new_values = attribute_names.map do |name|
-        @values[schema.index_for name]
+        @values[schema.index_for(name)]
       end
       self.class.new(new_values)
     end

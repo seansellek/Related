@@ -7,10 +7,12 @@ describe Schema do
 
   context '#match' do
     it 'returns true if array types match schema' do
-      expect( schema.match?(['Amy', 16, 'female']) ).to be_truthy
+      match = schema.match?(['Amy', 16, 'female'])
+      expect(match).to be_truthy
     end
     it 'returns false if array types do not match schema' do
-      expect( schema.match?([16, 'Amy', 'female']) ).to be_falsey
+      match = schema.match?([16, 'Amy', 'female'])
+      expect(match).to be_falsey
     end
   end
 

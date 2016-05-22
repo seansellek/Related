@@ -30,6 +30,18 @@ describe Related::Tuple do
     end
   end
 
+  context '#+' do
+    let(:result) { Tuple.new(['Amy', 16, 'female', 'Miami', 'Florida']) }
+    it 'combines values of other tuple and returns a new Tuple' do
+      tuple2 = Tuple.new(['Miami', 'Florida'])
+      expect(tuple + tuple2).to eq(result)
+    end
+
+    it 'is not associative' do
+      tuple2 = Tuple.new(['Miami', 'Florida'])
+      expect(tuple2 + tuple).to_not eq(result)
+    end
+  end
   context '#project' do
     it 'when given schema and attribute names returns filtered tuple, respecting new order' do
       expect( tuple.project(schema, [:age, :name]).values ).to eq([16, 'Amy'])

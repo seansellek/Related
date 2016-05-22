@@ -49,7 +49,7 @@ module Related
         r.schema = Schema.new(schema.heading + other.schema.heading)
         tuples.each do |tuple|
           other.tuples.each do |other_tuple|
-            r.add_tuple tuple.values + other_tuple.values
+            r.add_tuple tuple + other_tuple
           end
         end
       end
@@ -61,50 +61,50 @@ module Related
       other_attributes = other.schema.heading.to_h
       temp_attributes = []
       rename_hash = common_attributes.each_with_object({}) do |attr, hsh|
-        old_key, value = other_attributes.assoc(attr)
+        old_key, = other_attributes.assoc(attr)
         new_key = old_key.to_s.concat('_temp').to_sym
         hsh[old_key] = new_key
         temp_attributes << new_key
       end
       other = other.rename rename_hash
-      join = self.cross_product other
-      natural = join.select { |t| rename_hash.all? {|k,v| t[k] == t[v] } }
+      join = cross_product other
+      natural = join.select { |t| rename_hash.all? { |k, v| t[k] == t[v] } }
       natural.project( natural.schema.names - temp_attributes )
     end
     alias ⋈ natural_join
 
-    def rename rename_hash
+    def rename(rename_hash)
       Relation.new(schema.rename(rename_hash), tuples)
     end
     alias ρ rename
 
-    def intersection other
+    def intersection(other)
       raise ArgumentError unless schema == other.schema
       Relation.new(schema.similar, other & tuples)
     end
     alias ∩ intersection
 
-    def union other
+    def union(other)
       raise ArgumentError unless schema == other.schema
       Relation.new(schema, other | tuples)
     end
     alias ∪ union
 
-    def - other
+    def -(other)
       raise ArgumentError unless schema == other.schema
       Relation.new(schema, @tuples - other.tuples)
     end
 
-    def include? other
+    def include?(other)
       @tuples.each do |tuple|
         return true if tuple == other
       end
-      return false
+      false
     end
 
-    def == other
+    def ==(other)
       return false unless other.respond_to?(:tuples) && other.respond_to?(:schema)
-      self.tuples == other.tuples && schema == other.schema
+      tuples == other.tuples && schema == other.schema
     end
 
     def inspect

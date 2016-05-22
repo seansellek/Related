@@ -27,13 +27,23 @@ module Related
       end.to_h
     end
 
+    def +(other)
+      self.class.new(values + values_for(other))
+    end
+
     def ==(other)
-      values == other.respond_to?(:values) ? other.values : other
+      values == values_for(other)
     end
     alias eql? ==
 
     def hash
       values.hash
+    end
+
+    private
+
+    def values_for(other)
+      other.respond_to?(:values) ? other.values : other
     end
   end
 end

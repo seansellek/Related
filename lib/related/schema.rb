@@ -5,7 +5,7 @@
 module Related
   class Schema
     attr_accessor :heading
-    def initialize input
+    def initialize(input)
       build_schema_from_hash input if input.is_a? Hash
       build_schema_from_array input if input.is_a? Array
     end
@@ -14,72 +14,72 @@ module Related
       self.class.new(@type_hash)
     end
 
-    def rename rename_hash
+    def rename(rename_hash)
       new_attribute_array = @heading.clone
       rename_hash.each do |k, v|
-        new_attribute_array[ index_for(k) ][0] = v
+        new_attribute_array[index_for(k)][0] = v
       end
 
       self.class.new(new_attribute_array)
     end
 
-    def project attributes
+    def project(attributes)
       attr_types_hash = attributes.each_with_object({}) do |name, hash|
         hash[name] = type_for name
       end
       self.class.new(attr_types_hash)
     end
 
-    def match? input
-      input.each.with_index.all? do |obj, i| 
+    def match?(input)
+      input.each.with_index.all? do |obj, i|
         obj.is_a? type_at_index(i)
       end
     end
 
-    def names 
+    def names
       @type_hash.keys
     end
 
-    def == other
+    def ==(other)
       @heading == other.heading
     end
-    alias_method "eql?", "=="
+    alias eql? ==
 
     def hash
       @heading.hash
     end
 
-    def type_for key
+    def type_for(key)
       @type_hash[key]
     end
 
-    def index_for key
+    def index_for(key)
       @index_hash or build_index_hash
       @index_hash[key]
     end
 
     private
 
-    def build_schema_from_hash hash
-      @type_hash, @heading = hash, hash.to_a
+    def build_schema_from_hash(hash)
+      @type_hash = hash
+      @heading = hash.to_a
     end
 
-    def build_schema_from_array ary
-      @type_hash, @heading = ary.to_h, ary
+    def build_schema_from_array(ary)
+      @type_hash = ary.to_h
+      @heading = ary
     end
 
     def build_index_hash
       @index_hash = {}
       @heading.each_with_index do |pair, i|
-        name, type = pair
+        name, = pair
         @index_hash[name] = i
       end
     end
 
-    def type_at_index i
+    def type_at_index(i)
       heading[i][1]
     end
-
-
   end
 end

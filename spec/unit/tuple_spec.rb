@@ -4,7 +4,7 @@ describe Related::Tuple do
   let(:tuple) { Tuple.new(["Amy", 16, "female"]) }
   let(:schema) { Schema.new({name: String, age: 16, gender: "female"})}
   context "#[]" do
-    it "when given name and schema returns triple" do
+    it "when given name and schema returns value" do
       expect(tuple[:name, schema]).to eq("Amy")
     end
     it "when given index returns value" do
@@ -28,6 +28,11 @@ describe Related::Tuple do
     it "matches against values when given array" do
       expect(tuple).to eq(["Amy", 16, "female"])
     end
+  end
 
+  context "#project" do
+    it "when given schema returns filtered tuple" do
+      expect( tuple.project(schema, [:name, :age]) )
+    end
   end
 end

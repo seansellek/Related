@@ -45,6 +45,19 @@ module Related
     end
     alias_method "π", "project"
 
+    def cross_product other
+      attributes = ( schema.tuple_heading + other.schema.tuple_heading ).to_h
+      Relation.new do |r|
+        r.schema = Schema.new(attributes)
+        tuples.each do |tuple|
+          other.tuples.each do |other_tuple|
+            r.add_tuple tuple.values + other_tuple.values
+          end
+        end
+      end
+    end
+    alias_method "×", "cross_product"
+
     def natural_join other
     end
     alias_method "⋈", "natural_join"

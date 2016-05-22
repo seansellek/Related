@@ -14,10 +14,11 @@ module Related
       raise ArgumentError unless @schema
     end
 
-    def add_tuple ary
-      @schema.match? ary or raise TypeError
+    def add_tuple input
+      @schema.match? input or raise TypeError
       @tuples ||= Set.new
-      @tuples << Tuple.new(ary)
+      tuple = input.is_a?(Tuple) ? input : Tuple.new(input)
+      @tuples << tuple
     end
     alias_method "<<", "add_tuple"
 
@@ -33,12 +34,9 @@ module Related
     alias_method "𝜎", "select"
 
     def project attribute_names
-      attr_hash = attribute_names.each_with_object({}) do |name, hash|
-        hash[name] = schema[name][:type]
-      end
       Relation.new do |r|
-        r.schema = Schema.new(attr_hash)
-        @tuples.each do |tuple|
+        r.schema = schema.project attribute_names
+        tuples.each do |tuple|
           r.add_tuple tuple.project(schema, attribute_names)
         end
       end
@@ -46,7 +44,7 @@ module Related
     alias_method "π", "project"
 
     def cross_product other
-      attributes = ( schema.tuple_heading + other.schema.tuple_heading ).to_h
+      attributes = ( schema.heading + other.schema.heading ).to_h
       Relation.new do |r|
         r.schema = Schema.new(attributes)
         tuples.each do |tuple|
@@ -59,28 +57,41 @@ module Related
     alias_method "×", "cross_product"
 
     def natural_join other
+      common_attributes = schema.names & other.schema.names
+      other_attributes = other.schema.heading.to_h
+      temp_attributes = []
+      rename_hash = common_attributes.each_with_object({}) do |attr, hsh|
+        old_key, value = other_attributes.assoc(attr)
+        new_key = old_key.to_s.concat("_temp").to_sym
+        hsh[old_key] = new_key
+        temp_attributes << new_key
+      end
+      other = other.rename rename_hash 
+      join = self.cross_product other
+      natural = join.select { |t| rename_hash.all? {|k,v| t[k] == t[v] } }
+      natural.project( natural.schema.names - temp_attributes ) 
     end
     alias_method "⋈", "natural_join"
 
-    def rename new_attribute_names
-      Relation.new(schema.rename(new_attribute_names), tuples)
+    def rename rename_hash
+      Relation.new(schema.rename(rename_hash), tuples)
     end
     alias_method "ρ", "rename"
 
     def intersection other
-      raise ArgumentError unless schema.same_as? other.schema
+      raise ArgumentError unless schema == other.schema
       Relation.new(schema.similar, other & tuples)
     end
     alias_method "∩", "intersection"
 
     def union other
-      raise ArgumentError unless schema.same_as? other.schema
+      raise ArgumentError unless schema == other.schema
       Relation.new(schema, other | tuples)
     end
     alias_method "∪", "union"
 
     def - other
-      raise ArgumentError unless schema.same_as? other.schema
+      raise ArgumentError unless schema == other.schema
       Relation.new(schema, @tuples - other.tuples)
     end
 
@@ -92,27 +103,31 @@ module Related
     end
 
     def == other
-      return false unless schema.same_as? other.schema
-      self.tuples == other.tuples
+      return false unless other.respond_to?(:tuples) && other.respond_to?(:schema)
+      self.tuples == other.tuples && schema == other.schema
     end
 
     def inspect
       output = "Relation\n|"
       length = {}
       @schema.names.each {|n| length[n] = n.length }
-      @tuples.each do |tuple|
-        tuple.attributes(schema).each do |key, value|
-          length[key] = value.to_s.length if value.to_s.length > ( length[key] || 0 )
+      if @tuples
+        @tuples.each do |tuple|
+          tuple.attributes(schema).each do |key, value|
+            length[key] = value.to_s.length if value.to_s.length > ( length[key] || 0 )
+          end
         end
       end
       output << @schema.names.map{ |n| n.to_s.capitalize.center(length[n] + 2)}.join("|") << "|\n"
       output << "_" * output.lines.last.length << "\n"
-      @tuples.each do |tuple|
-        output << "|"
-        tuple.attributes(schema).each do |name, value|
-          output << value.to_s.center( length[name] + 2 ) << "|"
+      if @tuples
+        @tuples.each do |tuple|
+          output << "|"
+          tuple.attributes(schema).each do |name, value|
+            output << value.to_s.center( length[name] + 2 ) << "|"
+          end
+          output << "\n"
         end
-        output << "\n"
       end
       output
     end

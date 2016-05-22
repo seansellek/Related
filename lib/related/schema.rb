@@ -3,57 +3,83 @@
 # During a Rename operation, each of these three structures must be updated,
 # however, this is still significantly faster than updating every tuple in a relation.
 module Related
-  Attribute = Struct.new(:name, :type, :index)
   class Schema
-    attr_accessor :tuple_heading
-    def initialize schema_hash
-        @type_hash, @index_hash = schema_hash, {}
-        @tuple_heading = @type_hash.to_a
-        @tuple_heading.each_with_index do |*args|
-          name, type, i = args.flatten
-          @index_hash[name] = i
-        end
+    attr_accessor :heading
+    def initialize input
+      build_schema_from_hash input if input.is_a? Hash
+      build_schema_from_array input if input.is_a? Array
     end
 
-    def [] lookup
-      if lookup.is_a? Integer
-        attribute_for_index lookup
-      elsif lookup.is_a? Symbol
-        attribute_for_name lookup
+    def similar
+      self.class.new(@type_hash)
+    end
+
+    def rename rename_hash
+      new_attribute_array = @heading.clone
+      rename_hash.each do |k, v|
+        new_attribute_array[ index_for(k) ][0] = v
+      end
+
+      self.class.new(new_attribute_array)
+    end
+
+    def project attributes
+      attr_types_hash = attributes.each_with_object({}) do |name, hash|
+        hash[name] = type_for name
+      end
+      self.class.new(attr_types_hash)
+    end
+
+    def match? input
+      input.each.with_index.all? do |obj, i| 
+        obj.is_a? type_at_index(i)
       end
     end
-  end
 
-  def similar
-    self.class.new(@type_hash)
-  end
+    def names 
+      @type_hash.keys
+    end
 
-  def attribute_for_index index
-    name, type = @tuple_heading[index]
-    Attribute.new name, type, index
-  end
+    def == other
+      @heading == other.heading
+    end
+    alias_method "eql?", "=="
 
-  def attribute_for_name name
-    type, index = @type_hash[name], @index_hash[name]
-    Attribute.new name, type, index
-  end
+    def hash
+      @heading.hash
+    end
 
-  def rename new_names
-    new_attribute_hash = new_names.each.with_index.map do |name, i|
-       [ name, @tuple_heading[i][1] ]
-     end.to_h
-    self.class.new(new_attribute_hash)
-  end
+    def type_for key
+      @type_hash[key]
+    end
 
-  def match? ary
-    ary.each.with_index.all? { |obj, i| obj.is_a? self[i][:type] }
-  end
+    def index_for key
+      @index_hash or build_index_hash
+      @index_hash[key]
+    end
 
-  def same_as? schema
-    @tuple_heading == schema.tuple_heading
-  end
+    private
 
-  def names 
-    @type_hash.keys
+    def build_schema_from_hash hash
+      @type_hash, @heading = hash, hash.to_a
+    end
+
+    def build_schema_from_array ary
+      @type_hash, @heading = ary.to_h, ary
+    end
+
+    def build_index_hash
+      @index_hash = {}
+      @heading.each_with_index do |pair, i|
+        name, type = pair
+        @index_hash[name] = i
+      end
+    end
+
+    def type_at_index i
+      heading[i][1]
+    end
+
+
   end
 end

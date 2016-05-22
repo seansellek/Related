@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Relation do
   let(:menu) do 
     Relation.new do |r|
-      r.schema = Schema.new(name: String, price: Numeric)
+      r.schema = Schema.new(pizza: String, price: Numeric)
       r.add_tuple [ "mushroom", 8 ]
       r.add_tuple [ "cheese", 7 ]
     end 
@@ -35,9 +35,17 @@ describe Relation do
     end
   end
 
-  context "#⋈" do
-    it "raises TypeError when no common attributes"
-    it "performs a natural join"
+  context "#⋈, natural_join" do
+    it "performs a natural join" do
+      result = Relation.new do |r|
+        r.schema = Schema.new(name: String, age: Numeric, gender: String, pizza: String)
+        r.add_tuple ["Amy", 16, "female", "mushroom"]
+        r.add_tuple ["Amy", 16, "female", "pepperoni"]
+        r.add_tuple ["Ben", 21, "male", "cheese"]
+      end
+
+      expect(people.natural_join favorites).to eq(result)
+    end
   end
 
 
@@ -70,14 +78,13 @@ describe Relation do
   context "#ρ, #rename" do
     it "performs rename of attributes in relation" do
       result = Relation.new do |r|
-        r.schema = Schema.new(person_name: String, pizza_name: String)
+        r.schema = Schema.new(person_name: String, pizza: String)
         r.add_tuple ["Amy", "mushroom"]
         r.add_tuple ["Amy", "pepperoni"]
         r.add_tuple ["Ben", "cheese"]
         r.add_tuple ["Gus", "mushroom"]
       end
-      expect( favorites.ρ([:person_name, :pizza_name]) ).to eq(result)
-      expect( favorites.rename([:person_name, :pizza_name]) ).to eq(result)
+      expect( favorites.rename(name: :person_name) ).to eq(result)
     end
   end
 
@@ -118,16 +125,16 @@ describe Relation do
 
   context "#×, cross_product" do
     it "performs the cartesian product" do
-      menu_rename = menu.rename( [:pizza_name, :price] )
       result = Relation.new do |r|
-        r.schema = Schema.new(name: String, age: Numeric, gender: String, pizza_name: String,  price: Numeric)
+        r.schema = Schema.new(name: String, age: Numeric, gender: String, pizza: String,  price: Numeric)
         r.add_tuple [ "Amy", 16, "female", "mushroom", 8 ]
         r.add_tuple [ "Amy", 16, "female", "cheese", 7 ]
         r.add_tuple [ "Ben", 21, "male", "mushroom", 8 ]
         r.add_tuple [ "Ben", 21, "male", "cheese", 7 ]
       end
 
-      expect( people.cross_product(menu_rename) ).to eq(result)
+      expect( people.cross_product(menu) ).to eq(result)
+      expect( people.×(menu) ).to eq(result)
     end
   end
 end

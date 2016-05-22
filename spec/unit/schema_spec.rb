@@ -12,20 +12,15 @@ describe Schema do
     end
   end
 
-  context "#[]" do
-    it "when given name returns Attribute Header containing name, type, and index" do
-      attribute = schema[:name]
-      expect(attribute[:name]).to eq(:name)
-      expect(attribute[:type]).to eq(String)
-      expect(attribute[:index]).to be_a(Integer)
+  context "#rename" do
+    it "takes a hash of attributes to rename and returns a new schema" do
+      expect(schema.rename(gender: :sex)).to eq(described_class.new name: String, age: Numeric, sex: String)
     end
+  end
 
-    it "when given index returns Attribute Header containing name, type, and index" do
-      index = schema[:name].index
-      attribute = schema[index]
-      expect(attribute[:name]).to eq(:name)
-      expect(attribute[:type]).to eq(String)
-      expect(attribute[:index]).to be_a(Integer)
+  context "#similar" do
+    it "returns a new schema with the same attributes" do
+      expect(schema.similar).to eq(schema)
     end
   end
 
@@ -33,5 +28,12 @@ describe Schema do
     it "returns array of attribute names" do
       expect(schema.names).to eq([:name, :age, :gender])
     end
+  end
+
+  context "#project" do
+    it "returns schema with projection applied" do
+      expect(schema.project([:gender, :age])).to eq(Schema.new(gender: String, age: Numeric))
+    end
+
   end
 end

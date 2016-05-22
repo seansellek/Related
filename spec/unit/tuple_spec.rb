@@ -31,8 +31,8 @@ describe Related::Tuple do
   end
 
   context "#project" do
-    it "when given schema returns filtered tuple" do
-      expect( tuple.project(schema, [:name, :age]) )
+    it "when given schema and attribute names returns filtered tuple, respecting new order" do
+      expect( tuple.project(schema, [:age, :name]).values ).to eq([16, "Amy"])
     end
   end
 end

@@ -79,17 +79,21 @@ describe Relation do
 
 
   context "#ρ, #rename" do
-    it 'performs rename of attributes in relation' do
-      rename = favorites.rename(name: :person_name)
-      result = Relation.new do |r|
+    before do
+      @rename = favorites.rename(name: :person_name)
+      @result = Relation.new do |r|
         r.schema = Schema.new(person_name: String, pizza: String)
         r.add_tuple ['Amy', 'mushroom']
         r.add_tuple ['Amy', 'pepperoni']
         r.add_tuple ['Ben', 'cheese']
         r.add_tuple ['Gus', 'mushroom']
       end
-
-      expect(rename).to eq(result)
+    end
+    it 'performs rename of attributes in relation' do
+      expect(@rename).to eq(@result)
+    end
+    it "does not alter original relation" do
+      expect(favorites.schema).to eq(Schema.new(name: String, pizza: String))
     end
   end
 

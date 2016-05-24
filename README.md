@@ -5,7 +5,7 @@ When I was learning relational algebra, I had trouble visualizing what my operat
 
 Enter Related. Related was written to provide students and others with a quick scratchpad to run relational algebra operations.
 
-Each of Codd's Primitives (`selection`, `projection`, `cross_product`, `union`, and `projection`) are implemented, meaning you can in theory perform any operation possible. `natural_join` is also implemented, and I'll work to add more over time. 
+Each of Codd's Primitives (`selection`, `projection`, `cross_product`, `union`, and `difference`) are implemented, meaning you can in theory perform any operation possible. `natural_join` is also implemented, and I'll work to add more over time. 
 
 ## Example
 

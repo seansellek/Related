@@ -14,13 +14,13 @@ module Related
       self.class.new(@type_hash)
     end
 
-    def rename(rename_hash)
-      new_attribute_array = @heading.clone
-      rename_hash.each do |k, v|
-        new_attribute_array[index_for(k)][0] = v
+    def rename(rename_hsh)
+      new_attrs = []
+      @heading.each do |atr|
+        name, type = atr
+        new_attrs << (rename_hsh[name] ? [rename_hsh[name], type] : [name, type])
       end
-
-      self.class.new(new_attribute_array)
+      self.class.new(new_attrs)
     end
 
     def project(attributes)

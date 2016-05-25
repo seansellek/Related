@@ -45,7 +45,6 @@ describe Relation do
         r.add_tuple ['Amy', 16, 'female', 'pepperoni']
         r.add_tuple ['Ben', 21, 'male', 'cheese']
       end
-
       expect( people.natural_join(favorites) ).to eq(result)
     end
   end

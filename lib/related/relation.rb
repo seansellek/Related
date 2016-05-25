@@ -4,6 +4,7 @@ require 'set'
 module Related
   class Relation
     extend Forwardable
+    include Operations
     include Formatters::TableFormatter
 
     attr_accessor :tuples, :schema
@@ -56,23 +57,6 @@ module Related
       end
     end
     alias × cross_product
-
-    def natural_join(other)
-      common_attributes = schema.names & other.schema.names
-      other_attributes = other.schema.heading.to_h
-      temp_attributes = []
-      rename_hash = common_attributes.each_with_object({}) do |attr, hsh|
-        old_key, = other_attributes.assoc(attr)
-        new_key = old_key.to_s.concat('_temp').to_sym
-        hsh[old_key] = new_key
-        temp_attributes << new_key
-      end
-      other = other.rename rename_hash
-      join = cross_product other
-      natural = join.select { |t| rename_hash.all? { |k, v| t[k] == t[v] } }
-      natural.project( natural.schema.names - temp_attributes )
-    end
-    alias ⋈ natural_join
 
     def rename(rename_hash)
       Relation.new(schema.rename(rename_hash), tuples)

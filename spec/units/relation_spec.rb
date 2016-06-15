@@ -134,6 +134,24 @@ describe Relation do
     end
   end
 
+  context "#/, #-, #difference" do
+    it 'performs the difference' do
+      people2 = Relation.new do |r|
+        r.schema = Schema.new(name: String, age: Numeric, gender: String)
+        r.add_tuple ['Ben', 21, 'male']
+        r.add_tuple ['Gus', 45, 'male']
+      end
+
+      difference = people.difference(people2)
+      result = Relation.new do |r|
+        r.schema = Schema.new(name: String, age: Numeric, gender: String)
+        r.add_tuple ['Amy', 16, 'female']
+      end
+
+      expect(difference).to eq(result)
+    end
+  end
+
   context "#×, cross_product" do
     it 'performs the cartesian product' do
       cross = people.cross_product(menu)

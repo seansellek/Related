@@ -58,6 +58,17 @@ module Related
       @index_hash[key]
     end
 
+    # Calculate indexes mapping between two schemas
+    # example: [[1, 4], [2, 3]] would mean that during a join
+    # a left value at index 1 should be compared with a right at 4
+    def join_mapping_for(other)
+      mapping = []
+      (names & other.names).each do |name|
+        mapping << [index_for(name), other.index_for(name)]
+      end
+      mapping
+    end
+
     private
 
     def build_schema_from_hash(hash)

@@ -95,5 +95,9 @@ module Related
     def to_s
       to_table
     end
+
+		def clone
+			Relation.new @schema.clone, @tuples.clone
+		end
   end
 end

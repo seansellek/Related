@@ -16,6 +16,13 @@ describe Schema do
     end
   end
 
+  context 'built from array' do
+    it 'is equal to built from hash' do
+      from_hash = Schema.new [[:name, String], [:age, Numeric], [:gender, String]]
+      expect(from_hash).to eq(schema)
+    end
+  end
+
   context '#rename' do
     it 'takes a hash of attributes to rename and returns a new schema' do
       result = described_class.new(name: String, age: Numeric, sex: String)

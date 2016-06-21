@@ -57,4 +57,24 @@ describe Operations do
       expect(theta_join).to eq(result)
     end
   end
+
+  context "#⋉, semi_join, left_semi_join" do
+    it 'performs a left semi join' do
+      result = people.clone
+      people.add_tuple ['No-counterpart', 44, 'male']
+      expect( people.semi_join favorites ).to eq(result)
+    end
+  end
+
+  context "#⋊, right_semi_join" do
+    it 'performs a right semi join' do
+      result = Relation.new do |r|
+        r.schema = Schema.new(name: String, pizza: String)
+        r.add_tuple ['Amy', 'mushroom']
+        r.add_tuple ['Amy', 'pepperoni']
+        r.add_tuple ['Ben', 'cheese']
+      end
+      expect( people.right_semi_join favorites ).to eq(result)
+    end
+  end
 end

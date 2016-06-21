@@ -37,6 +37,14 @@ describe Relation do
     end
   end
 
+	context '#clone' do
+		it "doesn't change when tuples are added to the original" do
+			clone = people.clone
+			people.add_tuple ['New', 25, 'female']
+			expect(clone).to_not include ['New', 25, 'female']
+		end
+	end
+
   context "#⋈, natural_join" do
     it 'performs a natural join' do
       result = Relation.new do |r|

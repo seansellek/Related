@@ -75,10 +75,12 @@ module Related
     end
     alias ∪ union
 
-    def -(other)
+    def difference(other)
       raise ArgumentError unless schema == other.schema
       Relation.new(schema, @tuples - other.tuples)
     end
+    alias - difference
+    alias / difference
 
     def include?(other)
       @tuples.each do |tuple|

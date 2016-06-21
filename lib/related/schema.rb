@@ -6,8 +6,8 @@ module Related
   class Schema
     attr_accessor :heading
     def initialize(input)
-      build_schema_from_hash input if input.is_a? Hash
-      build_schema_from_array input if input.is_a? Array
+      @type_hash = input.to_h()
+      @heading = input.to_a()
     end
 
     def similar
@@ -59,16 +59,6 @@ module Related
     end
 
     private
-
-    def build_schema_from_hash(hash)
-      @type_hash = hash
-      @heading = hash.to_a
-    end
-
-    def build_schema_from_array(ary)
-      @type_hash = ary.to_h
-      @heading = ary
-    end
 
     def build_index_hash
       @index_hash = {}

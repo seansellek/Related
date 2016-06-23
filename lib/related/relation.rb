@@ -46,13 +46,20 @@ module Related
     end
     alias π project
 
+    def cross_action(other)
+      return if !block_given?
+      tuples.each do |tuple|
+        other.tuples.each do |other_tuple|
+          yield tuple, other_tuple
+        end
+      end
+    end
+
     def cross_product(other)
       Relation.new do |r|
         r.schema = Schema.new(schema.heading + other.schema.heading)
-        tuples.each do |tuple|
-          other.tuples.each do |other_tuple|
-            r.add_tuple tuple + other_tuple
-          end
+        cross_action other do |tuple, other_tuple|
+          r.add_tuple tuple + other_tuple
         end
       end
     end
@@ -98,8 +105,8 @@ module Related
       to_table
     end
 
-		def clone
-			Relation.new @schema.clone, @tuples.clone
-		end
+    def clone
+      Relation.new @schema.clone, @tuples.clone
+    end
   end
 end

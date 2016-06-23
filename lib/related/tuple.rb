@@ -40,8 +40,8 @@ module Related
       values.hash
     end
 
-    def matches?(other, index_mapping:)
-      index_mapping.each do |i, j|
+    def matches?(other, mapping:)
+      mapping.each do |i, j|
         return false if values[i] != other.values[j]
       end
       true
